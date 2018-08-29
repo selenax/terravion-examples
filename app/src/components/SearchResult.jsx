@@ -29,7 +29,7 @@ class SearchResult extends React.Component {
       center: [lng, lat],
       zoom
     });
-    var user_id = 'support+demo@terravion.com';
+   
     map.on('load', function() {
       map.addLayer({
         id: 'terravion-layer-key',

@@ -1,104 +1,49 @@
 import React, { Component } from 'react';
-import Button from '@material-ui/core/Button';
 import SearchResult from './SearchResult.jsx';
-import Typography from '@material-ui/core/Typography';
+import axios from 'axios';
+import 'babel-polyfill';
 import '../style.css';
 
+
+const epochAPI = 'https://api2.terravion.com/layers/getLayersFromBlockId?blockId=48ed28ca-d272-4d1f-bfe0-cb95b61eecbc&access_token=2e68cee0-b2fd-4ef5-97f6-8e44afb09ffa';
+const geomAPI = 'https://api2.terravion.com/userBlocks/getUserBlocksForMap?userId=5bad4dfa-7262-4a0a-b1e5-da30793cec65&access_token=2e68cee0-b2fd-4ef5-97f6-8e44afb09ffa';
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      termStart: '',
-      termEnd: '',
-      epochStart: null,
-      epochEnd: null
+      lng: 0,
+      lat: 0,
+      zoom: 0,
+      epochTime: [],
     };
 
-    this.onChangeStart = this.onChangeStart.bind(this);
-    this.onChangeEnd = this.onChangeEnd.bind(this);
-    this.onFormSubmit = this.onFormSubmit.bind(this);
+
+  }
+  componentDidMount() {
+    this.getDateEpoch();
+    this.getCoordinates();
+  }
+  
+  async getDateEpoch()  {
+    const res = axios.get(epochAPI).then(({data: data}) => {
+      console.log('successful epoch!', data);
+      this.setState({ epochTime: data})
+    })
   }
 
-  onChangeStart(event) {
-    this.setState({ termStart: event.target.value });
-    console.log(this.state.termStart, 'term start');
+  getCoordinates() {
+    const res = axios.get(geomAPI).then(({data: data}) => {
+      console.log('successful geosjon', data[0].geom)
+      this.setState({ })
+    })
   }
 
-  onChangeEnd(event) {
-    this.setState({ termEnd: event.target.value });
-    console.log(this.state.termEnd, 'term end');
-  }
-
-  onFormSubmit(event) {
-    const { termStart, termEnd } = this.state;
-    event.preventDefault();
-    console.log(termStart, 'start!');
-    console.log(termEnd, 'end!');
-
-    // var epochStart = new Date(term).getTime()
-
-    // console.log(epochStart)
-    const epochStart = this.convertEpoch(termStart);
-    const epochEnd = this.convertEpoch(termEnd);
-    console.log(epochStart, 'epochStart');
-    console.log(epochEnd, 'epochEnd');
-
-    this.setState({
-      epochStart: epochStart,
-      epochEnd: epochEnd
-    });
-  }
-
-  convertEpoch(term) {
-    return new Date(term).getTime() / 1000;
-  }
 
   render() {
-    const { term, epochStart, epochEnd } = this.state;
+    const {} = this.state;
     return (
       <div>
-        <Typography
-          variant="title"
-          style={{ color: 'black', fontSize: 20, textAlign: 'center' }}
-        >
-          Select dates for imagery
-        </Typography>
-        <form
-          onSubmit={this.onFormSubmit}
-          className="searchContainer"
-          style={{
-            marginTop: '20px',
-            marginBottom: '30px',
-            textAlign: 'center'
-          }}
-        >
-          <input
-            type="date"
-            className="form-control"
-            value={term}
-            height={400}
-            fontSize="15px"
-            onChange={this.onChangeStart}
-          />
-          {`   to   `}
-          <input
-            type="date"
-            className="form-control"
-            value={term}
-            height={400}
-            fontSize="15px"
-            onChange={this.onChangeEnd}
-          />
-          <span className="submitButton">
-            <Button type="submit" style={{ fontSize: '15px' }}>
-              Search
-            </Button>
-          </span>
-        </form>
-        {epochStart !== null &&
-          epochEnd !== null && (
-            <SearchResult epochStart={epochStart} epochEnd={epochEnd} />
-          )}
+       <SearchResult />
       </div>
     );
   }
